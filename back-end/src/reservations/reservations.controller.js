@@ -7,13 +7,13 @@ const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
 function notTuesday(req, res, next) {
   const reservationDate = new Date(req.body.data.reservation_date);
-  console.log(reservationDate);
+  reservationDate.setSeconds(1)
+  console.log(reservationDate, reservationDate.getDay());
 
-  if (reservationDate.getDay() !== 2) {
+  if (reservationDate.getDay() !== 1) {
     return next();
-  } else {
-    next({ status: 400, message: "cannot make a reservation on a Tuesday" });
   }
+  next({ status: 400, message: "cannot make a reservation on a Tuesday" });
 }
 
 function hasRightTime(req, res, next) {
@@ -46,19 +46,22 @@ function hasRightTime(req, res, next) {
     reservation > now
   ) {
     return next();
-  } else {
-    next({ status: 400, message: "time slot not available" });
   }
+  next({ status: 400, message: "time slot not available" });
 }
 
 async function list(req, res) {
   const data = await service.list(req.query);
-  console.log("listData", data)
   res.json({ data });
 }
 
 async function create(req, res) {
-  const newReservation = await service.create(req.body.data);
+  const date = new Date(req.body.data.reservation_date);
+
+  const newReservation = await service.create({
+    ...req.body.data,
+    reservation_date: date.toUTCString(),
+  });
 
   res.status(201).json({
     data: newReservation,
@@ -103,8 +106,8 @@ async function statusUpdate(req, res, next) {
 
   const updateReservation = {
     ...reservation,
-    status: req.body.status, 
-  }
+    status: req.body.status,
+  };
 
   const data = await service.update(updateReservation);
 

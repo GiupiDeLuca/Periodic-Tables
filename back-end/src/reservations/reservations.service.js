@@ -5,11 +5,12 @@ function list({ date, mobile_number }) {
     .select("*")
     .modify(function (queryBuilder) {
       if (date) {
-        let startOfDay = new Date(date);
-        let endOfDay = new Date(date);
-        startOfDay.setHours(0, 0, 0, 0);
-        endOfDay.setHours(23, 59, 59, 999);
-        queryBuilder.whereBetween("reservation_date", [startOfDay, endOfDay]);
+        // let startOfDay = new Date(date);
+        // let endOfDay = new Date(date);
+        // startOfDay.setUTCHours(0, 0, 0, 0);
+        // endOfDay.setUTCHours(23, 59, 59, 999);
+        // console.log(startOfDay, endOfDay)
+        queryBuilder.where({reservation_date: date });
       }
       if (mobile_number) {
         queryBuilder
@@ -21,7 +22,6 @@ function list({ date, mobile_number }) {
       }
     });
 }
-
 
 
 function create(newReservation) {

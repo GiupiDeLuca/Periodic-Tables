@@ -24,6 +24,7 @@ function ReservationCreate({ setDate }) {
 
   function submitHandler(event) {
     event.preventDefault();
+    console.log("reservation", reservation)
     makeReservation(reservation)
       .then(() => {
         setDate(reservation.reservation_date)
@@ -35,9 +36,8 @@ function ReservationCreate({ setDate }) {
   function changeHandler({ target: { name, value } }) {
     setReservation((previousReservation) => ({
       ...previousReservation,
-      [name]: value,
+      [name]: value
     }));
-    
   }
 
   return (
