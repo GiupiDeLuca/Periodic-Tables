@@ -108,7 +108,7 @@ export async function readReservation({ reservation_id }, signal) {
 }
 
 /*
- * DELETE RESERVATION
+ * CANCEL RESERVATION
  *
  *
  */
@@ -124,6 +124,22 @@ export async function updateReservationStatus(reservation_id, status, signal) {
   return await fetchJson(url, options)
     .then(formatReservationDate)
     .then(formatReservationTime);
+}
+
+/*
+ * DELETE RESERVATION
+ *
+ *
+ */
+
+export async function deleteReservation(reservation_id, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}`;
+  const options = {
+    method: "DELETE",
+    headers,
+    signal,
+  };
+  return await fetchJson(url, options);
 }
 
 // /*
@@ -167,9 +183,28 @@ export async function listTables(signal) {
 
 export async function updateTableSeat(table_id, reservation_id, signal) {
   const url = `${API_BASE_URL}/tables/${table_id}/seat`;
+  console.log(url);
   const options = {
     method: "PUT",
-    body: JSON.stringify({ reservation_id }),
+    body: JSON.stringify({ data: { reservation_id } }),
+    headers,
+    signal,
+  };
+  console.log("options", options);
+  return await fetchJson(url, options);
+}
+
+// /*
+//  * FINISH AN OCCUPIED TABLE
+//  *
+//  *
+//  */
+
+export async function finishTable(table_id, signal) {
+  const url = `${API_BASE_URL}/tables/${table_id}/seat`;
+  const options = {
+    method: "PUT",
+    body: JSON.stringify({ data: { reservation_id: null } }),
     headers,
     signal,
   };
