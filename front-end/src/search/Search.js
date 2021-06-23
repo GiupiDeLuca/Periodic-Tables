@@ -3,17 +3,17 @@ import ErrorAlert from "../layout/ErrorAlert";
 import { listReservations } from "../utils/api";
 
 function Search() {
-//   const [error, setError] = useState(null);
+  //   const [error, setError] = useState(null);
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
 
-  const [mobile_number, setMobile_number] = useState("")
+  const [mobile_number, setMobile_number] = useState("");
 
   const changeHandler = ({ target: { name, value } }) => {
-    setMobile_number(value)
+    setMobile_number(value);
   };
 
-    // useEffect(loadDashboard, [phoneNumber]);
+  // useEffect(loadDashboard, [phoneNumber]);
 
   function loadDashboard() {
     const abortController = new AbortController();
@@ -70,21 +70,23 @@ function Search() {
           Find
         </button>
       </form>
-      <table className="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">First Name</th>
-            <th scope="col">Last Name</th>
-            <th scope="col">Mobile Number</th>
-            <th scope="col">Reservation Date</th>
-            <th scope="col">Reservation Time</th>
-            <th scope="col">People</th>
-            <th scope="col">Status</th>
-          </tr>
-        </thead>
-        <tbody>{tableRows}</tbody>
-      </table>
+      {reservations.length > 0 && (
+        <table className="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">First Name</th>
+              <th scope="col">Last Name</th>
+              <th scope="col">Mobile Number</th>
+              <th scope="col">Reservation Date</th>
+              <th scope="col">Reservation Time</th>
+              <th scope="col">People</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>{tableRows}</tbody>
+        </table>
+      )}
     </main>
   );
 }

@@ -7,13 +7,13 @@ const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
 function notTuesday(req, res, next) {
   const reservationDate = new Date(req.body.data.reservation_date);
-  console.log(reservationDate);
+  // reservationDate.setSeconds(1)
+  // console.log(reservationDate, reservationDate.getDay());
 
-  if (reservationDate.getDay() !== 2) {
+  if (reservationDate.getDay() !== 1) {
     return next();
-  } else {
-    next({ status: 400, message: "cannot make a reservation on a Tuesday" });
   }
+  next({ status: 400, message: "cannot make a reservation on a Tuesday" });
 }
 
 function hasRightTime(req, res, next) {
@@ -23,42 +23,45 @@ function hasRightTime(req, res, next) {
 
   const earliestTimeArray = [10, 30, 0];
   const latestTimeArray = [21, 30, 0];
-  const reservTimeArray = reservationTimeString
-    .split(":")
-    .map((timeValue) => +timeValue); // + symbol makes number out of string
 
+
+  const dateTimeString = `${reservationDateString}T${reservationTimeString}:00`
+  
   // creating date objects//
-  const earliestTime = new Date(reservationDateString);
+  const earliestTime = new Date(dateTimeString);
   earliestTime.setHours(...earliestTimeArray);
 
-  const latestTime = new Date(reservationDateString);
+  const latestTime = new Date(dateTimeString);
   latestTime.setHours(...latestTimeArray);
 
-  const reservation = new Date(reservationDateString);
-  reservation.setHours(...reservTimeArray);
+  const reservation = new Date(dateTimeString);
 
   const now = new Date();
 
   // comparing date objects
+  
   if (
     reservation >= earliestTime &&
     reservation <= latestTime &&
     reservation > now
   ) {
     return next();
-  } else {
-    next({ status: 400, message: "time slot not available" });
   }
+  next({ status: 400, message: "time slot not available" });
 }
 
 async function list(req, res) {
   const data = await service.list(req.query);
-  console.log("listData", data)
   res.json({ data });
 }
 
 async function create(req, res) {
-  const newReservation = await service.create(req.body.data);
+  const date = new Date(req.body.data.reservation_date);
+
+  const newReservation = await service.create({
+    ...req.body.data,
+    reservation_date: date.toUTCString(),
+  });
 
   res.status(201).json({
     data: newReservation,
@@ -103,8 +106,8 @@ async function statusUpdate(req, res, next) {
 
   const updateReservation = {
     ...reservation,
-    status: req.body.status, 
-  }
+    status: req.body.status,
+  };
 
   const data = await service.update(updateReservation);
 

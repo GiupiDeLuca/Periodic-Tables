@@ -41,18 +41,21 @@ function SeatReservation() {
     event.preventDefault();
     updateTableSeat(selectedTable, reservation_id)
       .then(updateReservationStatus(reservation_id, SEATED))
+      .then(loadTables)
       .then(() => history.push("/"))
       .catch(setTablesError);
   }
 
   console.log("tables!", tables);
   console.log("selectedTable", selectedTable);
+  console.log("reserva_id", reservation_id)
 
   const tablesTableRows = tables.map((table) => (
     <option value={table.table_id} key={table.table_id}>
       {table.table_name} - {table.capacity}
     </option>
   ));
+
 
   return (
     <main>

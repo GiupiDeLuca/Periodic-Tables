@@ -24,6 +24,7 @@ function ReservationCreate({ setDate }) {
 
   function submitHandler(event) {
     event.preventDefault();
+    console.log("reservation", reservation)
     makeReservation(reservation)
       .then(() => {
         setDate(reservation.reservation_date)
@@ -35,9 +36,8 @@ function ReservationCreate({ setDate }) {
   function changeHandler({ target: { name, value } }) {
     setReservation((previousReservation) => ({
       ...previousReservation,
-      [name]: value,
+      [name]: value
     }));
-    
   }
 
   return (
@@ -140,7 +140,7 @@ function ReservationCreate({ setDate }) {
             />
           </div>
         </div>
-        <div className="col-6">
+        {/* <div className="col-6">
             <label className="form-label" htmlFor="status">
               Status
             </label>
@@ -153,7 +153,7 @@ function ReservationCreate({ setDate }) {
               onChange={changeHandler}
               required={true}
             />
-          </div>
+          </div> */}
         <div>
           <button
             type="button"
