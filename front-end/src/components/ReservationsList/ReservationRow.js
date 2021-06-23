@@ -1,6 +1,13 @@
 import React from "react";
 
-function ReservationDisplayRow({ reservation, buttons, reservationDone, cancelHandler }) {
+function ReservationDisplayRow({
+  reservation,
+  buttons,
+  reservationDone,
+  cancelHandler,
+}) {
+
+
   return (
     <tr key={reservation.reservation_id}>
       <th scope="row">{reservation.reservation_id}</th>
@@ -11,47 +18,57 @@ function ReservationDisplayRow({ reservation, buttons, reservationDone, cancelHa
       <td>{reservation.reservation_time}</td>
       <td>{reservation.people}</td>
       <td>{reservation.status}</td>
-      <td>
-        {buttons && (
-          <div>
+      {buttons && (
+        <td>
+          <button type="button" className="btn btn-secondary mr-1 mb-2">
+            <a
+              href={`/reservations/${reservation.reservation_id}/edit`}
+              style={{ textDecoration: "none", color: "white" }}
+            >
+              Edit
+            </a>
+          </button>
+        </td>
+      )}
+      {buttons && (
+        <td>
+          <button
+            type="button"
+            className="btn btn-secondary mr-1 mb-2"
+            data-reservation-id-cancel={reservation.reservation_id}
+            onClick={() => cancelHandler(reservation.reservation_id)}
+          >
+            Cancel
+          </button>
+        </td>
+      )}
+      {buttons && (
+        <td>
+          {reservation.status === "booked" && (
             <button type="button" className="btn btn-secondary mr-1 mb-2">
               <a
-                href={`/reservations/${reservation.reservation_id}/edit`}
+                href={`/reservations/${reservation.reservation_id}/seat`}
                 style={{ textDecoration: "none", color: "white" }}
               >
-                Edit
+                Seat
               </a>
             </button>
+          )}
+        </td>
+      )}
+      {buttons && (
+        <td>
+          {reservation.status === "seated" && (
             <button
               type="button"
               className="btn btn-secondary mr-1 mb-2"
-              data-reservation-id-cancel={reservation.reservation_id}
-              onClick={() => cancelHandler(reservation.reservation_id)}
+              onClick={() => reservationDone(reservation.reservation_id)}
             >
-              Cancel
+              Done
             </button>
-            {reservation.status === "booked" && (
-              <button type="button" className="btn btn-secondary mr-1 mb-2">
-                <a
-                  href={`/reservations/${reservation.reservation_id}/seat`}
-                  style={{ textDecoration: "none", color: "white" }}
-                >
-                  Seat
-                </a>
-              </button>
-            )}
-            {reservation.status === "seated" && (
-              <button
-                type="button"
-                className="btn btn-secondary mr-1 mb-2"
-                onClick={() => reservationDone(reservation.reservation_id)}
-              >
-                Done
-              </button>
-            )}
-          </div>
-        )}
-      </td>
+          )}
+        </td>
+      )}
     </tr>
   );
 }
