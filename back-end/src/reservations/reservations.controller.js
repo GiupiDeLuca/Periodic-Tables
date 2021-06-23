@@ -7,8 +7,8 @@ const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
 function notTuesday(req, res, next) {
   const reservationDate = new Date(req.body.data.reservation_date);
-  reservationDate.setSeconds(1)
-  console.log(reservationDate, reservationDate.getDay());
+  // reservationDate.setSeconds(1)
+  // console.log(reservationDate, reservationDate.getDay());
 
   if (reservationDate.getDay() !== 1) {
     return next();
@@ -23,23 +23,23 @@ function hasRightTime(req, res, next) {
 
   const earliestTimeArray = [10, 30, 0];
   const latestTimeArray = [21, 30, 0];
-  const reservTimeArray = reservationTimeString
-    .split(":")
-    .map((timeValue) => +timeValue); // + symbol makes number out of string
 
+
+  const dateTimeString = `${reservationDateString}T${reservationTimeString}:00`
+  
   // creating date objects//
-  const earliestTime = new Date(reservationDateString);
+  const earliestTime = new Date(dateTimeString);
   earliestTime.setHours(...earliestTimeArray);
 
-  const latestTime = new Date(reservationDateString);
+  const latestTime = new Date(dateTimeString);
   latestTime.setHours(...latestTimeArray);
 
-  const reservation = new Date(reservationDateString);
-  reservation.setHours(...reservTimeArray);
+  const reservation = new Date(dateTimeString);
 
   const now = new Date();
 
   // comparing date objects
+  
   if (
     reservation >= earliestTime &&
     reservation <= latestTime &&

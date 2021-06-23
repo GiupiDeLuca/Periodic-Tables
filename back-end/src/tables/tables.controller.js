@@ -32,7 +32,6 @@ async function updateTable(req, res, next) {
   } else {
     updatedTable.status = FREE;
   }
-
   const data = await service.update(updatedTable);
   res.json({ data });
 }
