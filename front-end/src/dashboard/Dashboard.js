@@ -8,6 +8,7 @@ import { CANCELLED, FINISHED, SEATED } from "../utils/constants";
 import { listTables } from "../utils/api";
 import { finishTable } from "../utils/api";
 import { deleteReservation } from "../utils/api";
+import ReservationsList from "../components/ReservationsList";
 
 /**
  * Defines the dashboard page.
@@ -52,7 +53,6 @@ function Dashboard({ date, setDate, tables, setTables }) {
     }
   }
 
-
   function finishTableHandler(table_id) {
     if (
       window.confirm(
@@ -73,67 +73,6 @@ function Dashboard({ date, setDate, tables, setTables }) {
         .catch(setReservationsError);
     }
   }
-
-  const reservationsTableRows = reservations.map((reservation) => (
-    <tr key={reservation.reservation_id}>
-      <th scope="row">{reservation.reservation_id}</th>
-      <td>{reservation.first_name}</td>
-      <td>{reservation.last_name}</td>
-      <td>{reservation.mobile_number}</td>
-      <td>{reservation.reservation_date}</td>
-      <td>{reservation.reservation_time}</td>
-      <td>{reservation.people}</td>
-      <td data-reservation-id-status={reservation.reservation_id}>
-        {reservation.status}
-      </td>
-      <td>
-        <button type="button" className="btn btn-secondary mr-1 mb-2">
-          <a
-            href={`/reservations/${reservation.reservation_id}/edit`}
-            style={{ textDecoration: "none", color: "white" }}
-          >
-            Edit
-          </a>
-        </button>
-      </td>
-      <td>
-        <button
-          type="button"
-          className="btn btn-secondary mr-1 mb-2"
-          data-reservation-id-cancel={reservation.reservation_id}
-          onClick={() => cancelHandler(reservation.reservation_id)}
-        >
-          Cancel
-        </button>
-      </td>
-      <td>
-        {reservation.status === "booked" && (
-          <button
-            type="button"
-            className="btn btn-secondary mr-1 mb-2"
-          >
-            <a
-              href={`/reservations/${reservation.reservation_id}/seat`}
-              style={{ textDecoration: "none", color: "white" }}
-            >
-              Seat
-            </a>
-          </button>
-        )}
-      </td>
-      <td>
-        {reservation.status === "seated" && (
-          <button
-            type="button"
-            className="btn btn-secondary mr-1 mb-2"
-            onClick={() => reservationDone(reservation.reservation_id)}
-          >
-            Done
-          </button>
-        )}
-      </td>
-    </tr>
-  ));
 
   const tablesTableRows = tables
     .sort((a, b) =>
@@ -190,21 +129,15 @@ function Dashboard({ date, setDate, tables, setTables }) {
         </button>
       </div>
       <ErrorAlert error={reservationsError} />
-      <table className="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">First Name</th>
-            <th scope="col">Last Name</th>
-            <th scope="col">Mobile Number</th>
-            <th scope="col">Reservation Date</th>
-            <th scope="col">Reservation Time</th>
-            <th scope="col">People</th>
-            <th scope="col">Status</th>
-          </tr>
-        </thead>
-        <tbody>{reservationsTableRows}</tbody>
-      </table>
+      {reservations.length > 0 && (
+        <ReservationsList
+          reservations={reservations}
+          reservationDone={reservationDone}
+          cancelHandler={cancelHandler}
+          buttons
+        />
+      )}
+
       <table className="table">
         <thead>
           <tr>
