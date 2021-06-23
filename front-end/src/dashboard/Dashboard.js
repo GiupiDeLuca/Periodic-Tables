@@ -37,16 +37,6 @@ function Dashboard({ date, setDate, tables, setTables }) {
       })
       .catch(setReservationsError);
 
-    // listReservations({ date }, abortController.signal)
-    //   .then((data) => {
-    //     setReservations(data);
-    //   })
-    //   .catch(setReservationsError);
-    // listTables(abortController.signal)
-    //   .then((data) => {
-    //     setTables(data);
-    //   })
-
     return () => abortController.abort();
   }
 
@@ -62,11 +52,6 @@ function Dashboard({ date, setDate, tables, setTables }) {
     }
   }
 
-  // function seatHandler(reservation_id) {
-  //   updateReservationStatus(reservation_id, SEATED)
-  //     .then(loadDashboard)
-  //     .catch(setReservationsError);
-  // }
 
   function finishTableHandler(table_id) {
     if (
@@ -98,7 +83,9 @@ function Dashboard({ date, setDate, tables, setTables }) {
       <td>{reservation.reservation_date}</td>
       <td>{reservation.reservation_time}</td>
       <td>{reservation.people}</td>
-      <td>{reservation.status}</td>
+      <td data-reservation-id-status={reservation.reservation_id}>
+        {reservation.status}
+      </td>
       <td>
         <button type="button" className="btn btn-secondary mr-1 mb-2">
           <a
@@ -124,7 +111,6 @@ function Dashboard({ date, setDate, tables, setTables }) {
           <button
             type="button"
             className="btn btn-secondary mr-1 mb-2"
-            // onClick={() => seatHandler(reservation.reservation_id)}
           >
             <a
               href={`/reservations/${reservation.reservation_id}/seat`}
@@ -158,7 +144,7 @@ function Dashboard({ date, setDate, tables, setTables }) {
         <th scope="row">{table.table_id}</th>
         <td>{table.table_name}</td>
         <td>{table.capacity}</td>
-        <td>{table.status}</td>
+        <td data-table-id-status={table.table_id}>{table.status}</td>
         <td>
           {table.status === "occupied" && (
             <button
