@@ -183,14 +183,12 @@ export async function listTables(signal) {
 
 export async function updateTableSeat(table_id, reservation_id, signal) {
   const url = `${API_BASE_URL}/tables/${table_id}/seat`;
-  console.log(url);
   const options = {
     method: "PUT",
     body: JSON.stringify({ data: { reservation_id } }),
     headers,
     signal,
   };
-  console.log("options", options);
   return await fetchJson(url, options);
 }
 

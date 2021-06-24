@@ -1,4 +1,5 @@
 import React from "react";
+import { BOOKED, SEATED, CANCELLED } from "../../utils/constants";
 
 function ReservationDisplayRow({
   reservation,
@@ -6,8 +7,6 @@ function ReservationDisplayRow({
   reservationDone,
   cancelHandler,
 }) {
-
-
   return (
     <tr key={reservation.reservation_id}>
       <th scope="row">{reservation.reservation_id}</th>
@@ -20,31 +19,35 @@ function ReservationDisplayRow({
       <td>{reservation.status}</td>
       {buttons && (
         <td>
-          <button type="button" className="btn btn-secondary mr-1 mb-2">
-            <a
-              href={`/reservations/${reservation.reservation_id}/edit`}
-              style={{ textDecoration: "none", color: "white" }}
+          {reservation.status === BOOKED && (
+            <button type="button" className="btn btn-secondary mr-1 mb-2">
+              <a
+                href={`/reservations/${reservation.reservation_id}/edit`}
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                Edit
+              </a>
+            </button>
+          )}
+        </td>
+      )}
+      {buttons && (
+        <td>
+          {reservation.status !== CANCELLED && (
+            <button
+              type="button"
+              className="btn btn-secondary mr-1 mb-2"
+              data-reservation-id-cancel={reservation.reservation_id}
+              onClick={() => cancelHandler(reservation.reservation_id)}
             >
-              Edit
-            </a>
-          </button>
+              Cancel
+            </button>
+          )}
         </td>
       )}
       {buttons && (
         <td>
-          <button
-            type="button"
-            className="btn btn-secondary mr-1 mb-2"
-            data-reservation-id-cancel={reservation.reservation_id}
-            onClick={() => cancelHandler(reservation.reservation_id)}
-          >
-            Cancel
-          </button>
-        </td>
-      )}
-      {buttons && (
-        <td>
-          {reservation.status === "booked" && (
+          {reservation.status === BOOKED && (
             <button type="button" className="btn btn-secondary mr-1 mb-2">
               <a
                 href={`/reservations/${reservation.reservation_id}/seat`}
@@ -58,7 +61,20 @@ function ReservationDisplayRow({
       )}
       {buttons && (
         <td>
-          {reservation.status === "seated" && (
+          {reservation.status === SEATED && (
+            <button
+              type="button"
+              className="btn btn-secondary mr-1 mb-2"
+              onClick={() => reservationDone(reservation.reservation_id)}
+            >
+              Done
+            </button>
+          )}
+        </td>
+      )}
+      {buttons && (
+        <td>
+          {reservation.status === CANCELLED && (
             <button
               type="button"
               className="btn btn-secondary mr-1 mb-2"

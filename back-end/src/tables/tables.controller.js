@@ -1,6 +1,7 @@
 const service = require("./tables.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
-const { OCCUPIED, FREE } = require("../constants");
+const { OCCUPIED, FREE, BOOKED } = require("../constants");
+const reservationService = require("../reservations/reservations.service");
 
 async function create(req, res) {
   const newTable = await service.create(req.body.data);
@@ -19,7 +20,20 @@ async function list(req, res) {
 
 async function readTable(req, res, next) {
   const data = await service.readTable(req.params.table_id);
+  console.log("dataread", data);
   res.json({ data });
+}
+
+async function finishOccupiedTableValidation(req, res, next) {
+  const table = await service.readTable(req.params.table_id);
+
+  if (table[0].reservation_id === null) {
+    return next();
+  } else if (table[0].reservation_id && table[0].status === OCCUPIED) {
+    return next();
+  }
+
+  next({ status: 400, message: "you can only finish an occupied table" });
 }
 
 async function updateTable(req, res, next) {
@@ -32,13 +46,37 @@ async function updateTable(req, res, next) {
   } else {
     updatedTable.status = FREE;
   }
-  const data = await service.update(updatedTable);
-  res.json({ data });
+  const updatedTableData = await service.update(updatedTable);
+
+  const reservation = await reservationService.readReservation(
+    updatedTableData[0].reservation_id
+  );
+
+    if ( reservation.length === 0 || updatedTableData[0].capacity >= reservation[0].people) {
+      res.json({ updatedTableData });
+    } else {
+      const reversedTableUpdate = {
+        ...updatedTableData[0],
+        status: FREE,
+        reservation_id: null,
+      };
+      const reservationUpdate = {
+        ...reservation[0],
+        status: BOOKED,
+      };
+      await service.update(reversedTableUpdate);
+      await reservationService.update(reservationUpdate);
+      next({
+        status: 400,
+        message: `please select a table that can hold at least ${reservation[0].people} people`,
+      });
+    }
+  
 }
 
 module.exports = {
   list: asyncErrorBoundary(list),
   create: [asyncErrorBoundary(create)],
   read: [asyncErrorBoundary(readTable)],
-  update: [asyncErrorBoundary(updateTable)],
+  update: [asyncErrorBoundary(finishOccupiedTableValidation), asyncErrorBoundary(updateTable)],
 };

@@ -73,7 +73,7 @@ function TableCreate() {
             />
           </div>
         </div>
-        <div className="row mb-3">
+        {/* <div className="row mb-3">
           <div className="col-6">
             <label className="form-label" htmlFor="status">
               Status
@@ -88,7 +88,7 @@ function TableCreate() {
               required={true}
             />
           </div>
-        </div>
+        </div> */}
         <div>
           <button
             type="button"
