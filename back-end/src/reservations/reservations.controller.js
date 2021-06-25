@@ -6,11 +6,13 @@ const service = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
 function notTuesday(req, res, next) {
-  const reservationDate = new Date(req.body.data.reservation_date);
-  // reservationDate.setSeconds(1)
-  // console.log(reservationDate, reservationDate.getDay());
+  const { reservation_date, reservation_time } = req.body.data;
 
-  if (reservationDate.getDay() !== 1) {
+  const reservationString = `${reservation_date}T${reservation_time}:00`
+
+  const reservationDate = new Date(reservationString)
+
+  if (reservationDate.getDay() !== 2) {
     return next();
   }
   next({ status: 400, message: "cannot make a reservation on a Tuesday" });
@@ -104,10 +106,10 @@ async function destroyReservation(req, res) {
 
 async function updateReservation(req, res, next) {
   const updatedReservation = {
-    ...req.body,
+    ...req.body.data,
     reservation_id: res.locals.reservations[0].reservation_id,
   };
-
+  console.log("updateRes", updatedReservation);
   const data = await service.update(updatedReservation);
 
   res.json({ data });
