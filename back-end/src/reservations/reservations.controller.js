@@ -8,9 +8,9 @@ const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 function notTuesday(req, res, next) {
   const { reservation_date, reservation_time } = req.body.data;
 
-  const reservationString = `${reservation_date}T${reservation_time}:00`
+  const reservationString = `${reservation_date}T${reservation_time}:00`;
 
-  const reservationDate = new Date(reservationString)
+  const reservationDate = new Date(reservationString);
 
   if (reservationDate.getDay() !== 2) {
     return next();
@@ -51,23 +51,31 @@ function hasRightTime(req, res, next) {
   next({ status: 400, message: "time slot not available" });
 }
 
+function phoneValidation(mobile_number) {
+  if (mobile_number.length < 10) {
+    return false;
+  } 
+  const justNumbers = mobile_number.match(/\d+/g);
+  if (justNumbers && justNumbers.join("").length < 10) {
+    return false;
+  }
+  return true;
+}
+
 async function list(req, res, next) {
-  const data = await service.list(req.query);
   if (req.query.mobile_number) {
-    if (data.length === 0) {
-      next({ status: 404, message: "reservation cannot be found." });
-    } else {
-      res.json({ data });
+    if (!phoneValidation(req.query.mobile_number)) {
+      next({ status: 400, message: "enter a valid phone number" });
     }
+  }
+  const data = await service.list(req.query);
+  if (req.query.mobile_number && data.length === 0) {
+    next({ status: 404, message: "reservation cannot be found." });
+  } else {
+    return res.json({ data });
   }
   res.json({ data });
 }
-
-// async function list(req, res) {
-//   console.log("req.query", req.query.mobile_number)
-//   const data = await service.list(req.query);
-//   res.json({ data });
-// }
 
 async function create(req, res) {
   const date = new Date(req.body.data.reservation_date);

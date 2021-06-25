@@ -103,6 +103,7 @@ export async function readReservation({ reservation_id }, signal) {
     signal,
   };
   return await fetchJson(url, options)
+    .then(data => data[0])
     .then(formatReservationDate)
     .then(formatReservationTime);
 }
@@ -124,6 +125,37 @@ export async function updateReservationStatus(reservation_id, status, signal) {
   return await fetchJson(url, options)
     .then(formatReservationDate)
     .then(formatReservationTime);
+}
+
+/*
+ * UPDATE RESERVATION
+ *
+ *
+ */
+
+export async function updateReservation(reservation, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation.reservation_id}`;
+  const options = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "PUT",
+    body: JSON.stringify({ data: reservation }),
+    signal,
+  };
+  return await fetchJson(url, options)
+    .then((payload) => {
+      console.log("payload", payload);
+      return formatReservationDate(payload);
+    })
+    .then(formatReservationTime);
+  // .then((payload) => {
+  //   console.log("payloadEdit", payload)
+  //   if (payload.data && payload.data.length > 0) {
+  //     let payloadReservation = payload.data[0];
+  //       return formatReservationTime(formatReservationDate(payloadReservation))
+  //   }
+  // })
 }
 
 /*

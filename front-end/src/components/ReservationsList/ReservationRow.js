@@ -61,7 +61,8 @@ function ReservationDisplayRow({
       )}
       {buttons && (
         <td>
-          {reservation.status === SEATED && (
+          {(reservation.status === SEATED ||
+            reservation.status === CANCELLED) && (
             <button
               type="button"
               className="btn btn-secondary mr-1 mb-2"
@@ -72,7 +73,7 @@ function ReservationDisplayRow({
           )}
         </td>
       )}
-      {buttons && (
+      {/* {buttons && (
         <td>
           {reservation.status === CANCELLED && (
             <button
@@ -84,7 +85,7 @@ function ReservationDisplayRow({
             </button>
           )}
         </td>
-      )}
+      )} */}
     </tr>
   );
 }

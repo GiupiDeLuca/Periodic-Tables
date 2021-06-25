@@ -4,6 +4,7 @@ import { readReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import formatReservationDate from "../utils/format-reservation-date";
 import formatReservationTime from "../utils/format-reservation-time";
+import { updateReservation } from "../utils/api";
 
 function EditReservation() {
   const history = useHistory();
@@ -17,39 +18,42 @@ function EditReservation() {
     reservation_date: "",
     reservation_time: "",
     people: "",
-    status: ""
+    status: "",
   });
 
-  //   useEffect(loadReservation, [reservation_id]);
+  useEffect(loadReservation, [reservation_id]);
 
-  //   function loadReservation() {
-  //     const abortController = new AbortController();
-  //     setReservationsError(null);
-  //     readReservation({ reservation_id }, abortController.signal)
-  //       .then(setReservation)
-  //       .catch(setReservationsError);
-  //     return () => abortController.abort();
-  //   }
-
-  useEffect(() => {
+  function loadReservation() {
     const abortController = new AbortController();
+    setReservationsError(null);
+    readReservation({ reservation_id }, abortController.signal)
+      .then((reservationData) => {
+        console.log("reservationData", reservationData);
+        return setReservation(reservationData);
+      })
+      .catch(setReservationsError);
+    return () => abortController.abort();
+  }
 
-    fetch(`http://localhost:5000/reservations/${reservation_id}`, {
-      signal: abortController.signal,
-    })
-      .then((response) => response.json())
-      .then((payload) => {
-        if (payload.data && payload.data.length > 0) {
-          let payloadReservation = payload.data[0];
-          setReservation(
-            formatReservationTime(formatReservationDate(payloadReservation))
-          );
-        }
-      });
-    return () => {
-      abortController.abort();
-    };
-  }, [reservation_id]);
+  // useEffect(() => {
+  //   const abortController = new AbortController();
+
+  //   fetch(`http://localhost:5000/reservations/${reservation_id}`, {
+  //     signal: abortController.signal,
+  //   })
+  //     .then((response) => response.json())
+  //     .then((payload) => {
+  //       if (payload.data && payload.data.length > 0) {
+  //         let payloadReservation = payload.data[0];
+  //         setReservation(
+  //           formatReservationTime(formatReservationDate(payloadReservation))
+  //         );
+  //       }
+  //     });
+  //   return () => {
+  //     abortController.abort();
+  //   };
+  // }, [reservation_id]);
 
   function changeHandler({ target: { name, value } }) {
     setReservation({
@@ -60,22 +64,7 @@ function EditReservation() {
 
   function submitHandler(event) {
     event.preventDefault();
-    fetch(`http://localhost:5000/reservations/${reservation_id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "PUT",
-      body: JSON.stringify(reservation),
-    })
-      .then((response) => response.json())
-      .then((payload) => {
-        if (payload.data && payload.data.length > 0) {
-          let payloadReservation = payload.data[0];
-          setReservation(
-            formatReservationTime(formatReservationDate(payloadReservation))
-          );
-        }
-      });
+    updateReservation(reservation).then(setReservation);
     history.push("/");
   }
 
