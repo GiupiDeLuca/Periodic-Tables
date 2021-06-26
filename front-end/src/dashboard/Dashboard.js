@@ -137,7 +137,8 @@ function Dashboard({ date, setDate, tables, setTables }) {
           buttons
         />
       )}
-
+      <h2>Floor Plan</h2>
+      
       <table className="table">
         <thead>
           <tr>

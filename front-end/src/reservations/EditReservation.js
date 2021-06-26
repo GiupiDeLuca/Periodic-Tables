@@ -166,6 +166,7 @@ function EditReservation() {
               id="people"
               name="people"
               type="number"
+              min="1"
               value={reservation.people}
               onChange={changeHandler}
               required={true}

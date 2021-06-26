@@ -10,7 +10,7 @@ function TableCreate() {
     table_name: "",
     capacity: 0,
     status: "free",
-    reservation_id: null
+    reservation_id: null,
   });
 
   const [error, setError] = useState(null);
@@ -21,11 +21,15 @@ function TableCreate() {
 
   function submitHandler(event) {
     event.preventDefault();
-    createTable(table)
-      .then(() => {
-        history.push("/");
-      })
-      .catch(setError);
+    if (table.table_name.length >= 2) {
+      createTable(table)
+        .then(() => {
+          history.push("/");
+        })
+        .catch(setError);
+    } else {
+      setError({ message: "Table name must be at least 2 characters long" });
+    }
   }
 
   function changeHandler({ target: { name, value } }) {
@@ -67,6 +71,7 @@ function TableCreate() {
               id="capacity"
               name="capacity"
               type="number"
+              min="1"
               value={table.capacity}
               onChange={changeHandler}
               required={true}
