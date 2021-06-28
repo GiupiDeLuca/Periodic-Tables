@@ -1,0 +1,85 @@
+/* .tooltip {
+  position: relative;
+}
+.tooltip:hover:after {
+  position: absolute;
+  background-color: white;
+}
+
+.tooltip-dashboard:hover:after {
+  content: "Dashboard";
+} */
+body {
+    background-color: #DBF1FB;
+    color: #211A1E;
+}
+
+h1 {
+    padding-top: 32px;
+}
+
+@media (max-width: 600px) {
+  /* table {
+    display: block;
+  } */
+  table * {
+    display: block;
+  }
+  thead {
+    display: none;
+  }
+  tr {
+    /* background-color: white; */
+    margin-top: 10px;
+    border-radius: 20px;
+    box-shadow: 2px 2px 10px rgb(40, 40, 40);
+  }
+  td {
+    display: flex;
+    justify-content: space-between;
+  }
+  .labelFirstName:before {
+    content: "First Name";
+  }
+  .labelLastName:before {
+    content: "Last Name";
+  }
+  .labelPhoneNumber:before {
+    content: "Phone Number";
+  }
+  .labelDate:before {
+    content: "Reservation Date";
+  }
+  .labelTime:before {
+    content: "Reservation Time";
+  }
+  .labelSize:before {
+    content: "Party Size";
+  }
+  .labelStatus:before {
+    content: "Status";
+  }
+
+  td.tableButton {
+    display: inline-block;
+    padding-right: 0px;
+  }
+  td:empty {
+    display: none;
+  }
+  .labelTableName:before {
+    content: "Table Name";
+  }
+  .labelTableCapacity:before {
+    content: "Capacity";
+  }
+  .labelTableStatus:before {
+    content: "Status";
+  }
+}
+
+@media (max-width: 767px) and (min-width: 400px) {
+  .dashboardText {
+    display: none;
+  }
+}

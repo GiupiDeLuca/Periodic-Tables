@@ -77,7 +77,7 @@ function EditReservation() {
       <h1>Edit reservation</h1>
       <ErrorAlert error={reservationsError} />
       <form className="mb-4" onSubmit={submitHandler}>
-        <div className="row mb-3">
+        <div className="mb-3">
           <div className="col-6 form-group">
             <label className="form-label" htmlFor="first_name">
               First Name
@@ -129,7 +129,7 @@ function EditReservation() {
             />
             <small className="form-text text-muted">Enter mobile number.</small>
           </div>
-          <div className="col-6">
+          <div className="col-6 mb-3">
             <label className="form-label" htmlFor="reservation_date">
               Reservation Date
             </label>
@@ -143,7 +143,7 @@ function EditReservation() {
               required={true}
             />
           </div>
-          <div className="col-6">
+          <div className="col-6 mb-3">
             <label className="form-label" htmlFor="reservation_time">
               Reservation Time
             </label>
@@ -157,7 +157,7 @@ function EditReservation() {
               required={true}
             />
           </div>
-          <div className="col-6">
+          <div className="col-6 mb-3">
             <label className="form-label" htmlFor="people">
               Size of the party
             </label>
@@ -176,12 +176,16 @@ function EditReservation() {
         <div>
           <button
             type="button"
-            className="btn btn-secondary mr-2"
+            className="btn btn-secondary mr-2 btn-sm"
             onClick={cancelHandler}
           >
             Cancel
           </button>
-          <button type="submit" className="btn btn-primary">
+          <button
+            type="submit"
+            style={{ backgroundColor: "#211A1E" }}
+            className="btn btn-primary btn-sm"
+          >
             Submit
           </button>
         </div>

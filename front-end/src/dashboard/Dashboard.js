@@ -81,14 +81,17 @@ function Dashboard({ date, setDate, tables, setTables }) {
     .map((table) => (
       <tr key={table.table_id}>
         <th scope="row">{table.table_id}</th>
-        <td>{table.table_name}</td>
-        <td>{table.capacity}</td>
-        <td data-table-id-status={table.table_id}>{table.status}</td>
+        <td className="labelTableName">{table.table_name}</td>
+        <td className="labelTableCapacity">{table.capacity}</td>
+        <td className="labelTableStatus" data-table-id-status={table.table_id}>
+          {table.status}
+        </td>
         <td>
           {table.status === "occupied" && (
             <button
               type="button"
-              className="btn btn-secondary mr-1 mb-2"
+              style={{ backgroundColor: "#211A1E" }}
+              className="btn btn-secondary mr-1 mb-2 btn-sm"
               data-table-id-finish={table.table_id}
               onClick={() => finishTableHandler(table.table_id)}
             >
@@ -103,26 +106,32 @@ function Dashboard({ date, setDate, tables, setTables }) {
     <main>
       <h1>Dashboard</h1>
       <div className="d-md-flex mb-3">
-        <h4 className="mb-0">{`Reservations for ${date}`}</h4>
+        <h3
+          className="mb-0"
+          style={{ paddingTop: "24px" }}
+        >{`Reservations for ${date}`}</h3>
       </div>
       <div>
         <button
           type="button"
-          className="btn btn-secondary mr-2 mb-2"
+          style={{ backgroundColor: "#211A1E" }}
+          className="btn btn-secondary mr-2 mb-2 btn-sm"
           onClick={() => setDate(previous(date))}
         >
           Previous
         </button>
         <button
+          style={{ backgroundColor: "#211A1E" }}
           type="button"
-          className="btn btn-secondary mr-2 mb-2"
+          className="btn btn-secondary mr-2 mb-2 btn-sm"
           onClick={() => setDate(today())}
         >
           Today
         </button>
         <button
+          style={{ backgroundColor: "#211A1E" }}
           type="button"
-          className="btn btn-secondary mr-2 mb-2"
+          className="btn btn-secondary mr-2 mb-2 btn-sm"
           onClick={() => setDate(next(date))}
         >
           Next
@@ -137,10 +146,10 @@ function Dashboard({ date, setDate, tables, setTables }) {
           buttons
         />
       )}
-      <h2>Floor Plan</h2>
-      
-      <table className="table">
-        <thead>
+      <h3 style={{ paddingTop: "40px" }}>Floor Plan</h3>
+
+      <table className="table table-light table-hover">
+        <thead style={{ backgroundColor: "#DBF1FB", color: "#211A1E" }}>
           <tr>
             <th scope="col">#</th>
             <th scope="col">Table Name</th>

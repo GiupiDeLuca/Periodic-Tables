@@ -97,12 +97,16 @@ function TableCreate() {
         <div>
           <button
             type="button"
-            className="btn btn-secondary mr-2 mt-2"
+            className="btn btn-secondary mr-2 mt-2 btn-sm"
             onClick={cancelHandler}
           >
             Cancel
           </button>
-          <button type="submit" className="btn btn-primary mt-2">
+          <button
+            type="submit"
+            style={{ backgroundColor: "#211A1E" }}
+            className="btn btn-primary mt-2 btn-sm"
+          >
             Submit
           </button>
         </div>
