@@ -15,7 +15,7 @@ function list({ date, mobile_number }) {
           )
           .orderBy("reservation_date");
       }
-    });
+    }).orderBy("reservation_time")
 }
 
 

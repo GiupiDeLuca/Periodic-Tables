@@ -25,7 +25,7 @@ function ReservationsList({
     ));
 
   return (
-    <table className="table table-light table-hover">
+    <table className="table table-light table-hover tableStyle">
       <thead style={{backgroundColor: "#DBF1FB", color: "#211A1E"}}>
         <tr>
           <th scope="col">#</th>
@@ -36,6 +36,10 @@ function ReservationsList({
           <th scope="col">Time</th>
           <th scope="col">People</th>
           <th scope="col">Status</th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>{reservationsTableRows}</tbody>

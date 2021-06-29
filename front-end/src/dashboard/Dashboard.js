@@ -80,7 +80,7 @@ function Dashboard({ date, setDate, tables, setTables }) {
     )
     .map((table) => (
       <tr key={table.table_id}>
-        <th scope="row">{table.table_id}</th>
+        <td scope="row">{table.table_id}</td>
         <td className="labelTableName">{table.table_name}</td>
         <td className="labelTableCapacity">{table.capacity}</td>
         <td className="labelTableStatus" data-table-id-status={table.table_id}>
@@ -148,13 +148,14 @@ function Dashboard({ date, setDate, tables, setTables }) {
       )}
       <h3 style={{ paddingTop: "40px" }}>Floor Plan</h3>
 
-      <table className="table table-light table-hover">
+      <table className="table table-light table-hover tableStyle">
         <thead style={{ backgroundColor: "#DBF1FB", color: "#211A1E" }}>
           <tr>
             <th scope="col">#</th>
             <th scope="col">Table Name</th>
             <th scope="col">Capacity</th>
             <th scope="col">Status</th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>{tablesTableRows}</tbody>

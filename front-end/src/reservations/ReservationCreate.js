@@ -12,7 +12,7 @@ function ReservationCreate({ setDate }) {
     mobile_number: "",
     reservation_date: "",
     reservation_time: "",
-    people: "",
+    people: 0,
     status: "booked",
   });
 
@@ -34,15 +34,22 @@ function ReservationCreate({ setDate }) {
   }
 
   function changeHandler({ target: { name, value } }) {
+    if (name === "mobile_number") {
+      // console.log("value1", value)
+      // // value = new AsYouType('US').input(value)
+      // // phoneNumber.formatInternational() === "+1 213 373 4253";
+      // // phoneNumber.formatNational() === "(213) 373-4253";
+      // console.log("value2", value)
+    }
     setReservation((previousReservation) => ({
       ...previousReservation,
-      [name]: value,
+      [name]: name === "people" ? +value : value,
     }));
   }
 
   return (
     <main>
-      <h1 className="mb-3">Create Reservation</h1>
+      <h1 className="mb-3 ml-3">Create Reservation</h1>
       <ErrorAlert error={error} />
       <form onSubmit={submitHandler} className="mb-4">
         <div className="mb-3">
@@ -158,7 +165,7 @@ function ReservationCreate({ setDate }) {
         <div>
           <button
             type="button"
-            className="btn btn-secondary mr-2 mt-2 btn-sm"
+            className="btn btn-secondary mr-2 mt-2 ml-3 btn-sm"
             onClick={cancelHandler}
           >
             Cancel

@@ -10,18 +10,39 @@
   content: "Dashboard";
 } */
 body {
-    background-color: #DBF1FB;
-    color: #211A1E;
+  background-color: #dbf1fb;
+  color: #211a1e;
 }
 
 h1 {
-    padding-top: 32px;
+  padding-top: 32px;
+}
+
+.table-hover tbody tr td,
+.table-hover tbody tr th,
+.table-hover tbody tr {
+  background-color: white;
+}
+
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th,
+.table-hover tbody tr:hover {
+  background-color: #78c4e4;
+}
+
+@media (min-width: 601px) {
+  .tableStyle {
+    background-color: whitesmoke;
+    border-radius: 10px;
+    box-shadow: 3px 3px 10px black;
+    overflow: hidden;
+  }
 }
 
 @media (max-width: 600px) {
-  /* table {
-    display: block;
-  } */
+  .table {
+    background-color: transparent;
+  }
   table * {
     display: block;
   }
@@ -29,14 +50,19 @@ h1 {
     display: none;
   }
   tr {
-    /* background-color: white; */
+    background-color: white;
     margin-top: 10px;
     border-radius: 20px;
     box-shadow: 2px 2px 10px rgb(40, 40, 40);
+    overflow: hidden;
   }
   td {
     display: flex;
     justify-content: space-between;
+  }
+  .table td,
+  .table th {
+    border-top: none;
   }
   .labelFirstName:before {
     content: "First Name";

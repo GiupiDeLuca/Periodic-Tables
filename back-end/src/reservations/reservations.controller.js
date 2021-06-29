@@ -5,20 +5,76 @@
 const service = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
+const reservationDefinition = {
+  first_name: "",
+  last_name: "",
+  mobile_number: "518-555-5555",
+  reservation_date: "1972-01-01",
+  reservation_time: "00:00:01",
+  people: 1,
+};
+
+function propertiesAreDefined(req, res, next) {
+  const reservation = req.body.data;
+  if (!reservation) {
+    return next({ status: 400 });
+  }
+  const keys = Object.keys(reservationDefinition);
+  keys.forEach((key) => {
+    if (!reservation[key]) {
+      return next({ status: 400, message: key });
+    }
+  });
+  const { reservationTimeString, reservationDateString } = reservation; // "16:59:00"
+  const reservationString = `${reservationTimeString}T${reservationDateString}:00`;
+  res.locals.dateTimeString = reservationString;
+
+  keys.forEach((key) => {
+    if (
+      key === "people" &&
+      (typeof reservation[key] !== "number" ||
+        reservation[key] < reservationDefinition.people)
+      // (!isNaN(reservation[key]) ||
+      //   reservation[key] < reservationDefinition.people)
+    ) {
+      return next({ status: 400, message: key });
+    } else if (
+      key === "reservation_date" &&
+      new Date(reservation.reservation_date).toDateString() === "Invalid Date"
+    ) {
+      return next({ status: 400, message: key });
+    } else if (key === "reservation_time") {
+      const reservationTime = reservation[key];
+      const timeArray = reservationTime.split(":");
+      if (
+        timeArray.length !== 2 ||
+        isNaN(timeArray[0]) ||
+        isNaN(timeArray[1])
+      ) {
+        return next({ status: 400, message: key });
+      }
+    }
+  });
+
+  return next();
+}
+
 function notTuesday(req, res, next) {
   const { reservation_date, reservation_time } = req.body.data;
 
   const reservationString = `${reservation_date}T${reservation_time}:00`;
+
+  res.locals.dateTimeString = reservationString;
 
   const reservationDate = new Date(reservationString);
 
   if (reservationDate.getDay() !== 2) {
     return next();
   }
-  next({ status: 400, message: "cannot make a reservation on a Tuesday" });
+  next({ status: 400, message: "closed" });
 }
 
-function hasRightTime(req, res, next) {
+function notClosed(req, res, next) {
   // defining constants //
   const reservationTimeString = req.body.data.reservation_time; // "16:59:00"
   const reservationDateString = req.body.data.reservation_date;
@@ -41,20 +97,26 @@ function hasRightTime(req, res, next) {
 
   // comparing date objects
 
-  if (
-    reservation >= earliestTime &&
-    reservation <= latestTime &&
-    reservation > now
-  ) {
+  if (reservation >= earliestTime && reservation <= latestTime) {
     return next();
   }
-  next({ status: 400, message: "time slot not available" });
+  next({ status: 400, message: "closed" });
+}
+
+function notPast(req, res, next) {
+  const now = new Date();
+  const reservation = new Date(res.locals.dateTimeString);
+
+  if (reservation > now) {
+    return next();
+  }
+  next({ status: 400, message: "future" });
 }
 
 function phoneValidation(mobile_number) {
   if (mobile_number.length < 10) {
     return false;
-  } 
+  }
   const justNumbers = mobile_number.match(/\d+/g);
   if (justNumbers && justNumbers.join("").length < 10) {
     return false;
@@ -80,24 +142,34 @@ async function list(req, res, next) {
 async function create(req, res) {
   const date = new Date(req.body.data.reservation_date);
 
+  const reservationStrings = res.locals.dateTimeString.split("T");
+
+  const reservationDate = reservationStrings[0];
+  const reservationTime = reservationStrings[1];
+
   const newReservation = await service.create({
     ...req.body.data,
     reservation_date: date.toUTCString(),
   });
-
+  
   res.status(201).json({
-    data: newReservation,
+    data: [
+      {
+        ...newReservation[0],
+        reservation_date: reservationDate,
+        reservation_time: reservationTime,
+      },
+    ],
   });
 }
 
 async function reservationExists(req, res, next) {
   const reservation = await service.readReservation(req.params.reservation_id);
-
-  if (reservation) {
+  if (reservation.length === 1) {
     res.locals.reservations = reservation;
     return next();
   }
-  next({ status: 404, message: "reservation cannot be found." });
+  next({ status: 404, message: `${req.params.reservation_id}` });
 }
 
 async function readReservation(req, res, next) {
@@ -138,7 +210,13 @@ async function statusUpdate(req, res, next) {
 
 module.exports = {
   list: asyncErrorBoundary(list),
-  create: [notTuesday, hasRightTime, asyncErrorBoundary(create)],
+  create: [
+    propertiesAreDefined,
+    notTuesday,
+    notClosed,
+    notPast,
+    asyncErrorBoundary(create),
+  ],
   read: [
     asyncErrorBoundary(reservationExists),
     asyncErrorBoundary(readReservation),

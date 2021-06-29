@@ -74,7 +74,7 @@ function EditReservation() {
 
   return (
     <main>
-      <h1>Edit reservation</h1>
+      <h1 className="ml-3">Edit reservation</h1>
       <ErrorAlert error={reservationsError} />
       <form className="mb-4" onSubmit={submitHandler}>
         <div className="mb-3">
@@ -176,7 +176,7 @@ function EditReservation() {
         <div>
           <button
             type="button"
-            className="btn btn-secondary mr-2 btn-sm"
+            className="btn btn-secondary mr-2 ml-3 btn-sm"
             onClick={cancelHandler}
           >
             Cancel
