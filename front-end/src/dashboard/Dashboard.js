@@ -86,8 +86,7 @@ function Dashboard({ date, setDate, tables, setTables }) {
     )
     .map((table) => (
       <tr key={table.table_id}>
-        {/* // eslint-disable-next-line */}
-        <td scope="row">{table.table_id}</td>
+      
         <td className="labelTableName">{table.table_name}</td>
         <td className="labelTableCapacity">{table.capacity}</td>
         <td className="labelTableStatus" data-table-id-status={table.table_id}>
