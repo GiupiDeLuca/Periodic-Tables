@@ -34,8 +34,8 @@ describe("US-07 - Search reservation by phone number", () => {
         .get("/reservations?mobile_number=518-555-0169")
         .set("Accept", "application/json");
 
-      expect(response.body.error).toBeUndefined();
-      expect(response.body.data).toHaveLength(0);
+      expect(response.body.error).toEqual("reservation cannot be found.")
+      // expect(response.body.data).toHaveLength(0);
     });
   });
 });

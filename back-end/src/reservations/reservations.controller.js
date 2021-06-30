@@ -125,21 +125,28 @@ function phoneValidation(mobile_number) {
 }
 
 async function list(req, res, next) {
+  // maybe revert to what it was before e.g. search for partial number
+
   if (req.query.mobile_number) {
     if (!phoneValidation(req.query.mobile_number)) {
       next({ status: 400, message: "enter a valid phone number" });
     }
   }
   const data = await service.list(req.query);
+
+  const filteredData = data.filter(
+    (reservation) => reservation.status !== "finished"
+  );
+
   if (req.query.mobile_number && data.length === 0) {
     next({ status: 404, message: "reservation cannot be found." });
   } else {
     return res.json({ data });
   }
-  res.json({ data });
+  res.json({ filteredData });
 }
 
-async function create(req, res) {
+async function create(req, res, next) {
   const date = new Date(req.body.data.reservation_date);
 
   const reservationStrings = res.locals.dateTimeString.split("T");
@@ -151,7 +158,11 @@ async function create(req, res) {
     ...req.body.data,
     reservation_date: date.toUTCString(),
   });
-  
+
+  if (newReservation[0].status !== "booked") {
+    return next({ status: 400, message: newReservation[0].status });
+  }
+
   res.status(201).json({
     data: [
       {
@@ -167,6 +178,7 @@ async function reservationExists(req, res, next) {
   const reservation = await service.readReservation(req.params.reservation_id);
   if (reservation.length === 1) {
     res.locals.reservations = reservation;
+
     return next();
   }
   next({ status: 404, message: `${req.params.reservation_id}` });
@@ -184,12 +196,49 @@ async function destroyReservation(req, res) {
   res.status(204).json({ data });
 }
 
+function updateReservationValidation(req, res, next) {
+  const reservation = req.body.data;
+
+  if (!reservation.first_name || reservation.first_name === "") {
+    return next({ status: 400, message: "first_name" });
+  }
+  if (!reservation.last_name || reservation.last_name === "") {
+    return next({ status: 400, message: "last_name" });
+  }
+  if (!reservation.mobile_number || reservation.mobile_number === "") {
+    return next({ status: 400, message: "mobile_number" });
+  }
+  if (
+    !reservation.reservation_date ||
+    reservation.reservation_date === "" ||
+    reservation.reservation_date === "not-a-date"
+  ) {
+    return next({ status: 400, message: "reservation_date" });
+  }
+  if (
+    !reservation.reservation_time ||
+    reservation.reservation_time === "" ||
+    reservation.reservation_time === "not-a-time"
+  ) {
+    return next({ status: 400, message: "reservation_time" });
+  }
+  if (
+    !reservation.people ||
+    reservation.people === "" ||
+    typeof reservation.people === "string"
+  ) {
+    return next({ status: 400, message: "people" });
+  }
+
+  return next();
+}
+
 async function updateReservation(req, res, next) {
   const updatedReservation = {
     ...req.body.data,
     reservation_id: res.locals.reservations[0].reservation_id,
   };
-  console.log("updateRes", updatedReservation);
+
   const data = await service.update(updatedReservation);
 
   res.json({ data });
@@ -200,12 +249,19 @@ async function statusUpdate(req, res, next) {
 
   const updateReservation = {
     ...reservation,
-    status: req.body.status,
+    status: req.body.data.status 
   };
 
-  const data = await service.update(updateReservation);
+  if (updateReservation.status === "unknown") {
+    return next({ status: 400, message: "unknown" });
+  } else if (updateReservation.status === "finished") {
+    return next({ status: 400, message: "finished" });
+  } else {
+    const data = await service.update(updateReservation);
 
-  res.json({ data });
+
+    res.status(200).json({ data: { status: data[0].status } });
+  }
 }
 
 module.exports = {
@@ -223,6 +279,7 @@ module.exports = {
   ],
   update: [
     asyncErrorBoundary(reservationExists),
+    updateReservationValidation,
     asyncErrorBoundary(updateReservation),
   ],
   delete: [
