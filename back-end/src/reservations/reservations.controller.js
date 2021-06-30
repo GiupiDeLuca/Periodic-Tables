@@ -113,25 +113,8 @@ function notPast(req, res, next) {
   next({ status: 400, message: "future" });
 }
 
-function phoneValidation(mobile_number) {
-  if (mobile_number.length < 10) {
-    return false;
-  }
-  const justNumbers = mobile_number.match(/\d+/g);
-  if (justNumbers && justNumbers.join("").length < 10) {
-    return false;
-  }
-  return true;
-}
-
 async function list(req, res, next) {
-  // maybe revert to what it was before e.g. search for partial number
 
-  if (req.query.mobile_number) {
-    if (!phoneValidation(req.query.mobile_number)) {
-      next({ status: 400, message: "enter a valid phone number" });
-    }
-  }
   const data = await service.list(req.query);
 
   const filteredData = data.filter(
