@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { readReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
-import formatReservationDate from "../utils/format-reservation-date";
-import formatReservationTime from "../utils/format-reservation-time";
+
 import { updateReservation } from "../utils/api";
 
 function EditReservation() {

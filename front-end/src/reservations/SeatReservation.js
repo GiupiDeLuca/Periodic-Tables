@@ -4,7 +4,7 @@ import { listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { updateTableSeat } from "../utils/api";
 import { updateReservationStatus } from "../utils/api";
-import { CANCELLED, SEATED, FREE } from "../utils/constants";
+import {  SEATED, FREE } from "../utils/constants";
 
 function SeatReservation() {
   const history = useHistory();
@@ -48,7 +48,7 @@ function SeatReservation() {
       .catch(setTablesError);
   }
 
-  const tablesTableRows = tables.map((table) => {
+  const tablesTableRows = tables.forEach((table) => {
     if (table.status === FREE) {
       return (
         <option value={table.table_id} key={table.table_id}>

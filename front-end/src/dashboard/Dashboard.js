@@ -4,7 +4,7 @@ import { listReservations } from "../utils/api";
 import { updateReservationStatus } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { previous, next, today } from "../utils/date-time";
-import { CANCELLED, FINISHED, SEATED } from "../utils/constants";
+import { CANCELLED, FINISHED } from "../utils/constants";
 import { listTables } from "../utils/api";
 import { finishTable } from "../utils/api";
 import { deleteReservation } from "../utils/api";
@@ -21,7 +21,7 @@ function Dashboard({ date, setDate, tables, setTables }) {
 
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
-
+// eslint-disable-next-line
   useEffect(loadDashboard, [date]);
 
   function loadDashboard() {
@@ -86,6 +86,7 @@ function Dashboard({ date, setDate, tables, setTables }) {
     )
     .map((table) => (
       <tr key={table.table_id}>
+        {/* // eslint-disable-next-line */}
         <td scope="row">{table.table_id}</td>
         <td className="labelTableName">{table.table_name}</td>
         <td className="labelTableCapacity">{table.capacity}</td>
