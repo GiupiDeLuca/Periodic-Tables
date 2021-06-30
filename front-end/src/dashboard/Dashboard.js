@@ -34,7 +34,12 @@ function Dashboard({ date, setDate, tables, setTables }) {
     ])
       .then(([reservationData, tableData]) => {
         setReservations(reservationData);
-        setTables(tableData);
+        setTables(
+          tableData.map((table) => ({
+            ...table,
+            status: table.status === null ? "free" : table.status,
+          }))
+        );
       })
       .catch(setReservationsError);
 
@@ -69,26 +74,30 @@ function Dashboard({ date, setDate, tables, setTables }) {
         updateReservationStatus(reservation_id, FINISHED),
         deleteReservation(reservation_id),
       ])
+        .then(history.push("/"))
         .then(loadDashboard)
         .catch(setReservationsError);
     }
   }
-
+  
   const tablesTableRows = tables
     .sort((a, b) =>
       a.table_name > b.table_name ? 1 : b.table_name > a.table_name ? -1 : 0
     )
     .map((table) => (
       <tr key={table.table_id}>
-        <th scope="row">{table.table_id}</th>
-        <td>{table.table_name}</td>
-        <td>{table.capacity}</td>
-        <td data-table-id-status={table.table_id}>{table.status}</td>
+        <td scope="row">{table.table_id}</td>
+        <td className="labelTableName">{table.table_name}</td>
+        <td className="labelTableCapacity">{table.capacity}</td>
+        <td className="labelTableStatus" data-table-id-status={table.table_id}>
+          {table.status}
+        </td>
         <td>
           {table.status === "occupied" && (
             <button
               type="button"
-              className="btn btn-secondary mr-1 mb-2"
+              style={{ backgroundColor: "#211A1E" }}
+              className="btn btn-secondary mr-1 mb-2 btn-sm"
               data-table-id-finish={table.table_id}
               onClick={() => finishTableHandler(table.table_id)}
             >
@@ -103,26 +112,32 @@ function Dashboard({ date, setDate, tables, setTables }) {
     <main>
       <h1>Dashboard</h1>
       <div className="d-md-flex mb-3">
-        <h4 className="mb-0">{`Reservations for ${date}`}</h4>
+        <h3
+          className="mb-0"
+          style={{ paddingTop: "24px" }}
+        >{`Reservations for ${date}`}</h3>
       </div>
       <div>
         <button
           type="button"
-          className="btn btn-secondary mr-2 mb-2"
+          style={{ backgroundColor: "#211A1E" }}
+          className="btn btn-secondary mr-2 mb-2 btn-sm"
           onClick={() => setDate(previous(date))}
         >
           Previous
         </button>
         <button
+          style={{ backgroundColor: "#211A1E" }}
           type="button"
-          className="btn btn-secondary mr-2 mb-2"
+          className="btn btn-secondary mr-2 mb-2 btn-sm"
           onClick={() => setDate(today())}
         >
           Today
         </button>
         <button
+          style={{ backgroundColor: "#211A1E" }}
           type="button"
-          className="btn btn-secondary mr-2 mb-2"
+          className="btn btn-secondary mr-2 mb-2 btn-sm"
           onClick={() => setDate(next(date))}
         >
           Next
@@ -137,14 +152,16 @@ function Dashboard({ date, setDate, tables, setTables }) {
           buttons
         />
       )}
+      <h3 style={{ paddingTop: "40px" }}>Floor Plan</h3>
 
-      <table className="table">
-        <thead>
+      <table className="table table-light table-hover tableStyle">
+        <thead style={{ backgroundColor: "#DBF1FB", color: "#211A1E" }}>
           <tr>
             <th scope="col">#</th>
             <th scope="col">Table Name</th>
             <th scope="col">Capacity</th>
             <th scope="col">Status</th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>{tablesTableRows}</tbody>

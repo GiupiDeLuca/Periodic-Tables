@@ -51,7 +51,11 @@ function Search() {
             </small>
           </div>
         </div>
-        <button type="submit" className="btn btn-primary">
+        <button
+          type="submit"
+          style={{ backgroundColor: "#211A1E" }}
+          className="btn btn-primary btn-sm"
+        >
           Find
         </button>
       </form>

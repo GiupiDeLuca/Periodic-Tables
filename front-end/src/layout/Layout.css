@@ -1,4 +1,12 @@
 .side-bar {
-  background-color: #393a44;
+  background-color: #126B91;
   min-width: 200px;
+  padding-top: 32px;
+  box-shadow: 2px 2px 10px rgb(186, 185, 185);
 }
+
+span {
+  color: white;
+}
+
+

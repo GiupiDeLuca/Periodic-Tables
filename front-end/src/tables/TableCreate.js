@@ -8,9 +8,9 @@ function TableCreate() {
 
   const [table, setTable] = useState({
     table_name: "",
-    capacity: 0,
+    capacity: null,
     status: "free",
-    reservation_id: null
+    reservation_id: null,
   });
 
   const [error, setError] = useState(null);
@@ -21,11 +21,15 @@ function TableCreate() {
 
   function submitHandler(event) {
     event.preventDefault();
-    createTable(table)
-      .then(() => {
-        history.push("/");
-      })
-      .catch(setError);
+    if (table.table_name.length >= 2) {
+      createTable(table)
+        .then(() => {
+          history.push("/");
+        })
+        .catch(setError);
+    } else {
+      setError({ message: "Table name must be at least 2 characters long" });
+    }
   }
 
   function changeHandler({ target: { name, value } }) {
@@ -67,13 +71,14 @@ function TableCreate() {
               id="capacity"
               name="capacity"
               type="number"
+              min="1"
               value={table.capacity}
               onChange={changeHandler}
               required={true}
             />
           </div>
         </div>
-        <div className="row mb-3">
+        {/* <div className="row mb-3">
           <div className="col-6">
             <label className="form-label" htmlFor="status">
               Status
@@ -88,16 +93,20 @@ function TableCreate() {
               required={true}
             />
           </div>
-        </div>
+        </div> */}
         <div>
           <button
             type="button"
-            className="btn btn-secondary mr-2 mt-2"
+            className="btn btn-secondary mr-2 mt-2 btn-sm"
             onClick={cancelHandler}
           >
             Cancel
           </button>
-          <button type="submit" className="btn btn-primary mt-2">
+          <button
+            type="submit"
+            style={{ backgroundColor: "#211A1E" }}
+            className="btn btn-primary mt-2 btn-sm"
+          >
             Submit
           </button>
         </div>

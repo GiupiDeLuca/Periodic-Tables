@@ -12,8 +12,8 @@ function ReservationCreate({ setDate }) {
     mobile_number: "",
     reservation_date: "",
     reservation_time: "",
-    people: "",
-    status: "booked"
+    people: 0,
+    status: "booked",
   });
 
   const [error, setError] = useState(null);
@@ -24,28 +24,35 @@ function ReservationCreate({ setDate }) {
 
   function submitHandler(event) {
     event.preventDefault();
-    console.log("reservation", reservation)
+    console.log("reservation", reservation);
     makeReservation(reservation)
       .then(() => {
-        setDate(reservation.reservation_date)
+        setDate(reservation.reservation_date);
         history.push("/");
       })
       .catch(setError);
   }
 
   function changeHandler({ target: { name, value } }) {
+    if (name === "mobile_number") {
+      // console.log("value1", value)
+      // // value = new AsYouType('US').input(value)
+      // // phoneNumber.formatInternational() === "+1 213 373 4253";
+      // // phoneNumber.formatNational() === "(213) 373-4253";
+      // console.log("value2", value)
+    }
     setReservation((previousReservation) => ({
       ...previousReservation,
-      [name]: value
+      [name]: name === "people" ? +value : value,
     }));
   }
 
   return (
     <main>
-      <h1 className="mb-3">Create Reservation</h1>
+      <h1 className="mb-3 ml-3">Create Reservation</h1>
       <ErrorAlert error={error} />
       <form onSubmit={submitHandler} className="mb-4">
-        <div className="row mb-3">
+        <div className="mb-3">
           <div className="col-6 form-group">
             <label className="form-label" htmlFor="first_name">
               First Name
@@ -97,7 +104,7 @@ function ReservationCreate({ setDate }) {
             />
             <small className="form-text text-muted">Enter mobile number.</small>
           </div>
-          <div className="col-6">
+          <div className="col-6 mb-3">
             <label className="form-label" htmlFor="reservation_date">
               Reservation Date
             </label>
@@ -111,7 +118,7 @@ function ReservationCreate({ setDate }) {
               required={true}
             />
           </div>
-          <div className="col-6">
+          <div className="col-6 mb-3">
             <label className="form-label" htmlFor="reservation_time">
               Reservation Time
             </label>
@@ -125,7 +132,7 @@ function ReservationCreate({ setDate }) {
               required={true}
             />
           </div>
-          <div className="col-6">
+          <div className="col-6 mb-3">
             <label className="form-label" htmlFor="people">
               Size of the party
             </label>
@@ -134,6 +141,7 @@ function ReservationCreate({ setDate }) {
               id="people"
               name="people"
               type="number"
+              min="1"
               value={reservation.people}
               onChange={changeHandler}
               required={true}
@@ -157,12 +165,16 @@ function ReservationCreate({ setDate }) {
         <div>
           <button
             type="button"
-            className="btn btn-secondary mr-2 mt-2"
+            className="btn btn-secondary mr-2 mt-2 ml-3 btn-sm"
             onClick={cancelHandler}
           >
             Cancel
           </button>
-          <button type="submit" className="btn btn-primary mt-2">
+          <button
+            type="submit"
+            style={{ backgroundColor: "#211A1E" }}
+            className="btn btn-primary mt-2 btn-sm"
+          >
             Submit
           </button>
         </div>

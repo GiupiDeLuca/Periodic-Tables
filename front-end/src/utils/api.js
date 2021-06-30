@@ -103,6 +103,7 @@ export async function readReservation({ reservation_id }, signal) {
     signal,
   };
   return await fetchJson(url, options)
+    .then((data) => data[0])
     .then(formatReservationDate)
     .then(formatReservationTime);
 }
@@ -117,13 +118,36 @@ export async function updateReservationStatus(reservation_id, status, signal) {
   const url = `${API_BASE_URL}/reservations/${reservation_id}/status`;
   const options = {
     method: "PUT",
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ data: { status } }),
     headers,
     signal,
   };
   return await fetchJson(url, options)
-    .then(formatReservationDate)
+}
+
+/*
+ * UPDATE RESERVATION
+ *
+ *
+ */
+
+export async function updateReservation(reservation, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation.reservation_id}`;
+  const options = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "PUT",
+    body: JSON.stringify({ data: reservation }),
+    signal,
+  };
+  return await fetchJson(url, options)
+    .then((payload) => {
+      console.log("payload", payload);
+      return formatReservationDate(payload);
+    })
     .then(formatReservationTime);
+
 }
 
 /*
@@ -183,14 +207,12 @@ export async function listTables(signal) {
 
 export async function updateTableSeat(table_id, reservation_id, signal) {
   const url = `${API_BASE_URL}/tables/${table_id}/seat`;
-  console.log(url);
   const options = {
     method: "PUT",
     body: JSON.stringify({ data: { reservation_id } }),
     headers,
     signal,
   };
-  console.log("options", options);
   return await fetchJson(url, options);
 }
 

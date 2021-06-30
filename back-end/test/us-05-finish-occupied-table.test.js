@@ -40,9 +40,9 @@ describe("US-05 - Finish an occupied table", () => {
 
     test("returns 400 if table_id is not occupied.", async () => {
       const response = await request(app)
-        .delete("/tables/1/seat")
+        .put("/tables/1/seat")
         .set("Accept", "application/json")
-        .send({});
+        .send({data: {reservation_id: null}});
 
       expect(response.body.error).toContain("not occupied");
       expect(response.status).toBe(400);
@@ -60,9 +60,10 @@ describe("US-05 - Finish an occupied table", () => {
       expect(seatResponse.status).toBe(200);
 
       const finishResponse = await request(app)
-        .delete(`/tables/${tableOne.table_id}/seat`)
-        .set("Accept", "application/json");
-
+        .put(`/tables/${tableOne.table_id}/seat`)
+        .set("Accept", "application/json")
+        .send({ data: { reservation_id: null } });
+    
       expect(finishResponse.body.error).toBeUndefined();
       expect(finishResponse.status).toBe(200);
     });

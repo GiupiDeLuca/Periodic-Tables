@@ -5,11 +5,6 @@ function list({ date, mobile_number }) {
     .select("*")
     .modify(function (queryBuilder) {
       if (date) {
-        // let startOfDay = new Date(date);
-        // let endOfDay = new Date(date);
-        // startOfDay.setUTCHours(0, 0, 0, 0);
-        // endOfDay.setUTCHours(23, 59, 59, 999);
-        // console.log(startOfDay, endOfDay)
         queryBuilder.where({reservation_date: date });
       }
       if (mobile_number) {
@@ -20,7 +15,7 @@ function list({ date, mobile_number }) {
           )
           .orderBy("reservation_date");
       }
-    });
+    }).orderBy("reservation_time")
 }
 
 

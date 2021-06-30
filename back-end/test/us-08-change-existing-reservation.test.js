@@ -45,7 +45,7 @@ describe("US-08 - Change an existing reservation", () => {
         last_name: "Whale",
         mobile_number: "1231231235",
         reservation_date: "2026-12-30",
-        reservation_time: "18:00",
+        reservation_time: "18:00:00",
         people: 2,
       };
 
@@ -64,14 +64,21 @@ describe("US-08 - Change an existing reservation", () => {
         .set("Accept", "application/json")
         .send({ data: reservation });
 
+      const {
+        created_at,
+        updated_at,
+        status,
+        reservation_id,
+        ...result
+      } = response.body.data[0];
+
       expect(response.body.error).toBeUndefined();
-      expect(response.body.data).toEqual(
-        expect.objectContaining({
-          ...expected,
-          reservation_date: expect.stringMatching(expected.reservation_date),
-          reservation_time: expect.stringMatching(expected.reservation_time),
-        })
-      );
+      expect(result).toEqual({
+        ...expected,
+        reservation_date: new Date(expected.reservation_date)
+          .toISOString()
+          .split("T")[0]+"T05:00:00.000Z",
+      });
       expect(response.status).toBe(200);
     });
 

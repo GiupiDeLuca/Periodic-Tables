@@ -5,20 +5,76 @@
 const service = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
-function notTuesday(req, res, next) {
-  const {reservation_date, reservation_time} = req.body.data;
+const reservationDefinition = {
+  first_name: "",
+  last_name: "",
+  mobile_number: "518-555-5555",
+  reservation_date: "1972-01-01",
+  reservation_time: "00:00:01",
+  people: 1,
+};
 
-  const reservationString = `${reservation_date}T${reservation_time}:00`
+function propertiesAreDefined(req, res, next) {
+  const reservation = req.body.data;
+  if (!reservation) {
+    return next({ status: 400 });
+  }
+  const keys = Object.keys(reservationDefinition);
+  keys.forEach((key) => {
+    if (!reservation[key]) {
+      return next({ status: 400, message: key });
+    }
+  });
+  const { reservationTimeString, reservationDateString } = reservation; // "16:59:00"
+  const reservationString = `${reservationTimeString}T${reservationDateString}:00`;
+  res.locals.dateTimeString = reservationString;
+
+  keys.forEach((key) => {
+    if (
+      key === "people" &&
+      (typeof reservation[key] !== "number" ||
+        reservation[key] < reservationDefinition.people)
+      // (!isNaN(reservation[key]) ||
+      //   reservation[key] < reservationDefinition.people)
+    ) {
+      return next({ status: 400, message: key });
+    } else if (
+      key === "reservation_date" &&
+      new Date(reservation.reservation_date).toDateString() === "Invalid Date"
+    ) {
+      return next({ status: 400, message: key });
+    } else if (key === "reservation_time") {
+      const reservationTime = reservation[key];
+      const timeArray = reservationTime.split(":");
+      if (
+        timeArray.length !== 2 ||
+        isNaN(timeArray[0]) ||
+        isNaN(timeArray[1])
+      ) {
+        return next({ status: 400, message: key });
+      }
+    }
+  });
+
+  return next();
+}
+
+function notTuesday(req, res, next) {
+  const { reservation_date, reservation_time } = req.body.data;
+
+  const reservationString = `${reservation_date}T${reservation_time}:00`;
+
+  res.locals.dateTimeString = reservationString;
 
   const reservationDate = new Date(reservationString);
 
   if (reservationDate.getDay() !== 2) {
     return next();
   }
-  next({ status: 400, message: "cannot make a reservation on a Tuesday" });
+  next({ status: 400, message: "closed" });
 }
 
-function hasRightTime(req, res, next) {
+function notClosed(req, res, next) {
   // defining constants //
   const reservationTimeString = req.body.data.reservation_time; // "16:59:00"
   const reservationDateString = req.body.data.reservation_date;
@@ -26,9 +82,8 @@ function hasRightTime(req, res, next) {
   const earliestTimeArray = [10, 30, 0];
   const latestTimeArray = [21, 30, 0];
 
+  const dateTimeString = `${reservationDateString}T${reservationTimeString}:00`;
 
-  const dateTimeString = `${reservationDateString}T${reservationTimeString}:00`
-  
   // creating date objects//
   const earliestTime = new Date(dateTimeString);
   earliestTime.setHours(...earliestTimeArray);
@@ -41,43 +96,75 @@ function hasRightTime(req, res, next) {
   const now = new Date();
 
   // comparing date objects
-  
-  if (
-    reservation >= earliestTime &&
-    reservation <= latestTime &&
-    reservation > now
-  ) {
+
+  if (reservation >= earliestTime && reservation <= latestTime) {
     return next();
   }
-  next({ status: 400, message: "time slot not available" });
+  next({ status: 400, message: "closed" });
 }
 
-async function list(req, res) {
+function notPast(req, res, next) {
+  const now = new Date();
+  const reservation = new Date(res.locals.dateTimeString);
+
+  if (reservation > now) {
+    return next();
+  }
+  next({ status: 400, message: "future" });
+}
+
+async function list(req, res, next) {
+
   const data = await service.list(req.query);
-  res.json({ data });
+
+  const filteredData = data.filter(
+    (reservation) => reservation.status !== "finished"
+  );
+
+  if (req.query.mobile_number && data.length === 0) {
+    next({ status: 404, message: "reservation cannot be found." });
+  } else {
+    return res.json({ data });
+  }
+  res.json({ filteredData });
 }
 
-async function create(req, res) {
+async function create(req, res, next) {
   const date = new Date(req.body.data.reservation_date);
+
+  const reservationStrings = res.locals.dateTimeString.split("T");
+
+  const reservationDate = reservationStrings[0];
+  const reservationTime = reservationStrings[1];
 
   const newReservation = await service.create({
     ...req.body.data,
     reservation_date: date.toUTCString(),
   });
 
+  if (newReservation[0].status !== "booked") {
+    return next({ status: 400, message: newReservation[0].status });
+  }
+
   res.status(201).json({
-    data: newReservation,
+    data: [
+      {
+        ...newReservation[0],
+        reservation_date: reservationDate,
+        reservation_time: reservationTime,
+      },
+    ],
   });
 }
 
 async function reservationExists(req, res, next) {
   const reservation = await service.readReservation(req.params.reservation_id);
-
-  if (reservation) {
+  if (reservation.length === 1) {
     res.locals.reservations = reservation;
+
     return next();
   }
-  next({ status: 404, message: "reservation cannot be found." });
+  next({ status: 404, message: `${req.params.reservation_id}` });
 }
 
 async function readReservation(req, res, next) {
@@ -92,9 +179,46 @@ async function destroyReservation(req, res) {
   res.status(204).json({ data });
 }
 
+function updateReservationValidation(req, res, next) {
+  const reservation = req.body.data;
+
+  if (!reservation.first_name || reservation.first_name === "") {
+    return next({ status: 400, message: "first_name" });
+  }
+  if (!reservation.last_name || reservation.last_name === "") {
+    return next({ status: 400, message: "last_name" });
+  }
+  if (!reservation.mobile_number || reservation.mobile_number === "") {
+    return next({ status: 400, message: "mobile_number" });
+  }
+  if (
+    !reservation.reservation_date ||
+    reservation.reservation_date === "" ||
+    reservation.reservation_date === "not-a-date"
+  ) {
+    return next({ status: 400, message: "reservation_date" });
+  }
+  if (
+    !reservation.reservation_time ||
+    reservation.reservation_time === "" ||
+    reservation.reservation_time === "not-a-time"
+  ) {
+    return next({ status: 400, message: "reservation_time" });
+  }
+  if (
+    !reservation.people ||
+    reservation.people === "" ||
+    typeof reservation.people === "string"
+  ) {
+    return next({ status: 400, message: "people" });
+  }
+
+  return next();
+}
+
 async function updateReservation(req, res, next) {
   const updatedReservation = {
-    ...req.body,
+    ...req.body.data,
     reservation_id: res.locals.reservations[0].reservation_id,
   };
 
@@ -105,26 +229,41 @@ async function updateReservation(req, res, next) {
 
 async function statusUpdate(req, res, next) {
   const reservation = res.locals.reservations[0];
-
+  console.log("reservation",reservation)
+  console.log("req",req.body)
   const updateReservation = {
     ...reservation,
-    status: req.body.status,
+    status: req.body.data.status 
   };
 
-  const data = await service.update(updateReservation);
+  if (updateReservation.status === "unknown") {
+    return next({ status: 400, message: "unknown" });
+  } else if (updateReservation.status === "finished") {
+    return next({ status: 400, message: "finished" });
+  } else {
+    const data = await service.update(updateReservation);
 
-  res.json({ data });
+
+    res.status(200).json({ data: { status: data[0].status } });
+  }
 }
 
 module.exports = {
   list: asyncErrorBoundary(list),
-  create: [notTuesday, hasRightTime, asyncErrorBoundary(create)],
+  create: [
+    propertiesAreDefined,
+    notTuesday,
+    notClosed,
+    notPast,
+    asyncErrorBoundary(create),
+  ],
   read: [
     asyncErrorBoundary(reservationExists),
     asyncErrorBoundary(readReservation),
   ],
   update: [
     asyncErrorBoundary(reservationExists),
+    updateReservationValidation,
     asyncErrorBoundary(updateReservation),
   ],
   delete: [

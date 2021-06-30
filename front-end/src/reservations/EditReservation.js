@@ -4,6 +4,7 @@ import { readReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import formatReservationDate from "../utils/format-reservation-date";
 import formatReservationTime from "../utils/format-reservation-time";
+import { updateReservation } from "../utils/api";
 
 function EditReservation() {
   const history = useHistory();
@@ -17,39 +18,41 @@ function EditReservation() {
     reservation_date: "",
     reservation_time: "",
     people: "",
-    status: ""
+    status: "",
   });
 
-  //   useEffect(loadReservation, [reservation_id]);
+  useEffect(loadReservation, [reservation_id]);
 
-  //   function loadReservation() {
-  //     const abortController = new AbortController();
-  //     setReservationsError(null);
-  //     readReservation({ reservation_id }, abortController.signal)
-  //       .then(setReservation)
-  //       .catch(setReservationsError);
-  //     return () => abortController.abort();
-  //   }
-
-  useEffect(() => {
+  function loadReservation() {
     const abortController = new AbortController();
+    setReservationsError(null);
+    readReservation({ reservation_id }, abortController.signal)
+      .then((reservationData) => {
+        return setReservation(reservationData);
+      })
+      .catch(setReservationsError);
+    return () => abortController.abort();
+  }
 
-    fetch(`http://localhost:5000/reservations/${reservation_id}`, {
-      signal: abortController.signal,
-    })
-      .then((response) => response.json())
-      .then((payload) => {
-        if (payload.data && payload.data.length > 0) {
-          let payloadReservation = payload.data[0];
-          setReservation(
-            formatReservationTime(formatReservationDate(payloadReservation))
-          );
-        }
-      });
-    return () => {
-      abortController.abort();
-    };
-  }, [reservation_id]);
+  // useEffect(() => {
+  //   const abortController = new AbortController();
+
+  //   fetch(`http://localhost:5000/reservations/${reservation_id}`, {
+  //     signal: abortController.signal,
+  //   })
+  //     .then((response) => response.json())
+  //     .then((payload) => {
+  //       if (payload.data && payload.data.length > 0) {
+  //         let payloadReservation = payload.data[0];
+  //         setReservation(
+  //           formatReservationTime(formatReservationDate(payloadReservation))
+  //         );
+  //       }
+  //     });
+  //   return () => {
+  //     abortController.abort();
+  //   };
+  // }, [reservation_id]);
 
   function changeHandler({ target: { name, value } }) {
     setReservation({
@@ -60,22 +63,7 @@ function EditReservation() {
 
   function submitHandler(event) {
     event.preventDefault();
-    fetch(`http://localhost:5000/reservations/${reservation_id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "PUT",
-      body: JSON.stringify(reservation),
-    })
-      .then((response) => response.json())
-      .then((payload) => {
-        if (payload.data && payload.data.length > 0) {
-          let payloadReservation = payload.data[0];
-          setReservation(
-            formatReservationTime(formatReservationDate(payloadReservation))
-          );
-        }
-      });
+    updateReservation(reservation).then(() => setReservation(reservation))
     history.push("/");
   }
 
@@ -85,10 +73,10 @@ function EditReservation() {
 
   return (
     <main>
-      <h1>Edit reservation</h1>
+      <h1 className="ml-3">Edit reservation</h1>
       <ErrorAlert error={reservationsError} />
       <form className="mb-4" onSubmit={submitHandler}>
-        <div className="row mb-3">
+        <div className="mb-3">
           <div className="col-6 form-group">
             <label className="form-label" htmlFor="first_name">
               First Name
@@ -140,7 +128,7 @@ function EditReservation() {
             />
             <small className="form-text text-muted">Enter mobile number.</small>
           </div>
-          <div className="col-6">
+          <div className="col-6 mb-3">
             <label className="form-label" htmlFor="reservation_date">
               Reservation Date
             </label>
@@ -154,7 +142,7 @@ function EditReservation() {
               required={true}
             />
           </div>
-          <div className="col-6">
+          <div className="col-6 mb-3">
             <label className="form-label" htmlFor="reservation_time">
               Reservation Time
             </label>
@@ -168,7 +156,7 @@ function EditReservation() {
               required={true}
             />
           </div>
-          <div className="col-6">
+          <div className="col-6 mb-3">
             <label className="form-label" htmlFor="people">
               Size of the party
             </label>
@@ -177,6 +165,7 @@ function EditReservation() {
               id="people"
               name="people"
               type="number"
+              min="1"
               value={reservation.people}
               onChange={changeHandler}
               required={true}
@@ -186,12 +175,16 @@ function EditReservation() {
         <div>
           <button
             type="button"
-            className="btn btn-secondary mr-2"
+            className="btn btn-secondary mr-2 ml-3 btn-sm"
             onClick={cancelHandler}
           >
             Cancel
           </button>
-          <button type="submit" className="btn btn-primary">
+          <button
+            type="submit"
+            style={{ backgroundColor: "#211A1E" }}
+            className="btn btn-primary btn-sm"
+          >
             Submit
           </button>
         </div>

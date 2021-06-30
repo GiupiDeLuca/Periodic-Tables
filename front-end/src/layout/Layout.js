@@ -14,11 +14,11 @@ import "./Layout.css";
 function Layout() {
   return (
     <div className="container-fluid">
-      <div className="row h-100">
-        <div className="col-md-2 side-bar">
+      <div style={{minHeight: "100vh"}}className="row h-100 ">
+        <div className="col-xl-2 col-12 side-bar">
           <Menu />
         </div>
-        <div className="col">
+        <div className="col-xl-10 col-12 px-4">
           <Routes />
         </div>
       </div>
