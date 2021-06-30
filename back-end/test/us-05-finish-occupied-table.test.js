@@ -63,8 +63,7 @@ describe("US-05 - Finish an occupied table", () => {
         .put(`/tables/${tableOne.table_id}/seat`)
         .set("Accept", "application/json")
         .send({ data: { reservation_id: null } });
-      
-      console.log("finishResponse",finishResponse.body)
+    
       expect(finishResponse.body.error).toBeUndefined();
       expect(finishResponse.status).toBe(200);
     });

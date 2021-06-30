@@ -46,7 +46,7 @@ async function updateDataValidation(req, res, next) {
   const reservation = await reservationService.readReservation(
     tableRequest.reservation_id
   );
-  console.log("tableRequest", tableRequest);
+
   // if the table is occupied
   if (table.status === OCCUPIED) {
     // and a reservation is trying to be seated
@@ -124,8 +124,7 @@ async function readTable(req, res, next) {
 async function updateTable(req, res, next) {
   const { reservation_id } = req.body.data;
   const { table } = res.locals;
-  console.log("table", table);
-  console.log("res_id", reservation_id);
+
   let reservation;
   if (reservation_id === null) {
     reservation = (

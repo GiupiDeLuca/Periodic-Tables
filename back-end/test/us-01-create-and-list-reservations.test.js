@@ -341,7 +341,7 @@ describe("US-01 - Create and list reservations", () => {
         reservation_date: "2025-01-01",
         reservation_time: "17:30",
         people: 2,
-        status: "",
+        status: "booked"
       };
 
       const response = await request(app)
@@ -364,7 +364,7 @@ describe("US-01 - Create and list reservations", () => {
         reservation_date: "2025-01-01",
         reservation_time: "17:30:00",
         people: 2,
-        status: "",
+        status: "booked",
       });
       expect(response.status).toBe(201);
     });
