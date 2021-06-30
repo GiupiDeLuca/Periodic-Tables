@@ -229,7 +229,8 @@ async function updateReservation(req, res, next) {
 
 async function statusUpdate(req, res, next) {
   const reservation = res.locals.reservations[0];
-
+  console.log("reservation",reservation)
+  console.log("req",req.body)
   const updateReservation = {
     ...reservation,
     status: req.body.data.status 

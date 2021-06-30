@@ -21,6 +21,7 @@ function ReservationsList({
         reservationDone={reservationDone}
         cancelHandler={cancelHandler}
         buttons={buttons}
+        key={reservation.reservation_id}
       />
     ));
 

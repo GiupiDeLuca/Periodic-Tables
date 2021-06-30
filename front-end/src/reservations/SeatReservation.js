@@ -20,8 +20,11 @@ function SeatReservation() {
     const abortController = new AbortController();
     setTablesError(null);
     listTables(abortController.signal)
-      .then((data) => {
-        setTables(data);
+      .then((tableData) => {
+        setTables( tableData.map((table) => ({
+          ...table,
+          status: table.status === null ? "free" : table.status,
+        })));
       })
       .catch(setTablesError);
 

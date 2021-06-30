@@ -34,7 +34,12 @@ function Dashboard({ date, setDate, tables, setTables }) {
     ])
       .then(([reservationData, tableData]) => {
         setReservations(reservationData);
-        setTables(tableData);
+        setTables(
+          tableData.map((table) => ({
+            ...table,
+            status: table.status === null ? "free" : table.status,
+          }))
+        );
       })
       .catch(setReservationsError);
 
@@ -69,11 +74,12 @@ function Dashboard({ date, setDate, tables, setTables }) {
         updateReservationStatus(reservation_id, FINISHED),
         deleteReservation(reservation_id),
       ])
+        .then(history.push("/"))
         .then(loadDashboard)
         .catch(setReservationsError);
     }
   }
-
+  
   const tablesTableRows = tables
     .sort((a, b) =>
       a.table_name > b.table_name ? 1 : b.table_name > a.table_name ? -1 : 0

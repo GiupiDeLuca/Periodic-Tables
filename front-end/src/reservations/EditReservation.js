@@ -28,7 +28,6 @@ function EditReservation() {
     setReservationsError(null);
     readReservation({ reservation_id }, abortController.signal)
       .then((reservationData) => {
-        console.log("reservationData", reservationData);
         return setReservation(reservationData);
       })
       .catch(setReservationsError);
@@ -64,7 +63,7 @@ function EditReservation() {
 
   function submitHandler(event) {
     event.preventDefault();
-    updateReservation(reservation).then(setReservation);
+    updateReservation(reservation).then(() => setReservation(reservation))
     history.push("/");
   }
 

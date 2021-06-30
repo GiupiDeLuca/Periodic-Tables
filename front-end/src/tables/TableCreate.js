@@ -8,7 +8,7 @@ function TableCreate() {
 
   const [table, setTable] = useState({
     table_name: "",
-    capacity: 1,
+    capacity: null,
     status: "free",
     reservation_id: null,
   });

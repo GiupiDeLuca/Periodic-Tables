@@ -75,7 +75,7 @@ describe("US-07 - Search reservations - E2E", () => {
           ".screenshots/us-07-search-reservations-submit-no-result-after.png",
         fullPage: true,
       });
-      await expect(page).toMatch(/No reservations found/);
+      await expect(page).toMatch(/reservation cannot be found/);
     });
   });
 });

@@ -26,6 +26,7 @@ function asDateString(date) {
  *  the specified date string formatted as YYYY-MM-DD
  */
 export function formatAsDate(dateString) {
+  console.log("datestring",dateString);
   return dateString.match(dateFormat)[0];
 }
 
