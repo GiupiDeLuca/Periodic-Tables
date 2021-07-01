@@ -34,6 +34,7 @@ function Dashboard({ date, setDate, tables, setTables }) {
     ])
       .then(([reservationData, tableData]) => {
         setReservations(reservationData);
+        console.log("reservationData", reservationData)
         setTables(
           tableData.map((table) => ({
             ...table,
@@ -42,8 +43,9 @@ function Dashboard({ date, setDate, tables, setTables }) {
         );
       })
       .catch(setReservationsError);
-
+      
     return () => abortController.abort();
+
   }
 
   function cancelHandler(reservation_id) {
@@ -69,7 +71,7 @@ function Dashboard({ date, setDate, tables, setTables }) {
   }
 
   function reservationDone(reservation_id) {
-    if (window.confirm("Are these people done? This cannot be undone.")) {
+    if (window.confirm("Is this reservation done? This cannot be undone.")) {
       Promise.all([
         updateReservationStatus(reservation_id, FINISHED),
         deleteReservation(reservation_id),
@@ -77,6 +79,7 @@ function Dashboard({ date, setDate, tables, setTables }) {
         .then(history.push("/"))
         .then(loadDashboard)
         .catch(setReservationsError);
+        window.location.reload()
     }
   }
   
@@ -86,7 +89,8 @@ function Dashboard({ date, setDate, tables, setTables }) {
     )
     .map((table) => (
       <tr key={table.table_id}>
-      
+        {/* // eslint-disable-next-line */}
+        <td scope="row">{table.table_id}</td>
         <td className="labelTableName">{table.table_name}</td>
         <td className="labelTableCapacity">{table.capacity}</td>
         <td className="labelTableStatus" data-table-id-status={table.table_id}>

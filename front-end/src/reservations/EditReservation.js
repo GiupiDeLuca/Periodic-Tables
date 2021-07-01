@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { readReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
-
 import { updateReservation } from "../utils/api";
 
 function EditReservation() {
@@ -27,6 +26,7 @@ function EditReservation() {
     setReservationsError(null);
     readReservation({ reservation_id }, abortController.signal)
       .then((reservationData) => {
+        console.log("reservationDataEdit", reservationData)
         return setReservation(reservationData);
       })
       .catch(setReservationsError);
@@ -63,7 +63,9 @@ function EditReservation() {
   function submitHandler(event) {
     event.preventDefault();
     updateReservation(reservation).then(() => setReservation(reservation))
+    console.log("reservation", reservation)
     history.push("/");
+    window.location.reload()
   }
 
   function cancelHandler() {

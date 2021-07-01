@@ -3,8 +3,8 @@ import { useHistory, useParams } from "react-router-dom";
 import { listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { updateTableSeat } from "../utils/api";
-import { updateReservationStatus } from "../utils/api";
-import {  SEATED, FREE } from "../utils/constants";
+import {updateReservationStatus} from "../utils/api"
+import { CANCELLED, SEATED, FREE } from "../utils/constants";
 
 function SeatReservation() {
   const history = useHistory();
@@ -20,11 +20,8 @@ function SeatReservation() {
     const abortController = new AbortController();
     setTablesError(null);
     listTables(abortController.signal)
-      .then((tableData) => {
-        setTables( tableData.map((table) => ({
-          ...table,
-          status: table.status === null ? "free" : table.status,
-        })));
+      .then((data) => {
+        setTables(data);
       })
       .catch(setTablesError);
 
@@ -36,6 +33,7 @@ function SeatReservation() {
   }
 
   function changeHandler({ target: { name, value } }) {
+    console.log("value", value);
     setSelectedTable(value);
   }
 
@@ -48,7 +46,8 @@ function SeatReservation() {
       .catch(setTablesError);
   }
 
-  const tablesTableRows = tables.forEach((table) => {
+
+  const tablesTableRows = tables.map((table) => {
     if (table.status === FREE) {
       return (
         <option value={table.table_id} key={table.table_id}>
@@ -57,6 +56,7 @@ function SeatReservation() {
       );
     }
   });
+
 
   return (
     <main>
@@ -98,3 +98,5 @@ function SeatReservation() {
 }
 
 export default SeatReservation;
+
+

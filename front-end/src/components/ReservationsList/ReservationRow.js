@@ -1,5 +1,5 @@
 import React from "react";
-import { BOOKED, SEATED, CANCELLED } from "../../utils/constants";
+import { BOOKED, SEATED, CANCELLED, FINISHED } from "../../utils/constants";
 
 function ReservationDisplayRow({
   reservation,
@@ -71,7 +71,8 @@ function ReservationDisplayRow({
       {buttons && (
         <td className="tableButton">
           {(reservation.status === SEATED ||
-            reservation.status === CANCELLED) && (
+            reservation.status === CANCELLED ||
+            reservation.status === FINISHED) && (
             <button
               type="button"
               style={{ backgroundColor: "#211A1E" }}
